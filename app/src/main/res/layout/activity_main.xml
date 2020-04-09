@@ -13,7 +13,32 @@
         android:orientation="horizontal"
         app:layout_constraintTop_toTopOf="parent">
 
+        <EditText
+            android:id="@+id/memo_text_et"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Saisir un mémo ..."
+            android:imeOptions="actionDone"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/memo_ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:imeOptions="actionDone"
+            android:text="@android:string/ok" />
 
     </LinearLayout>
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/memo_rv"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 </android.support.constraint.ConstraintLayout>
