@@ -22,13 +22,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // memo list adapter
     MemoAdapter memoAdapter;
+
+    // memo recycler view
+    RecyclerView recyclerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         // get recycler view
-        RecyclerView recyclerView = findViewById(R.id.memo_rv);
+        recyclerView = findViewById(R.id.memo_rv);
         recyclerView.setHasFixedSize(true);
 
         // item disposition
@@ -71,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             EditText memoET = findViewById(R.id.memo_text_et);
             listMemo.add(new Memo(memoET.getText().toString()));
             memoAdapter.notifyItemInserted(listMemo.size() - 1);
+            recyclerView.smoothScrollToPosition(listMemo.size() - 1);
         }
     }
 }
