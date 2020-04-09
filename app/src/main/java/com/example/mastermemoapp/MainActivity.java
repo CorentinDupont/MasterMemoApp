@@ -1,6 +1,7 @@
 package com.example.mastermemoapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,6 +12,7 @@ import android.widget.EditText;
 
 import com.example.mastermemoapp.Adapters.MemoAdapter;
 import com.example.mastermemoapp.Entities.Memo;
+import com.example.mastermemoapp.ItemTouchHelpers.MemoItemTouchHelperCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +49,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // create and set recycler view adapter
         memoAdapter = new MemoAdapter(listMemo);
         recyclerView.setAdapter(memoAdapter);
+
+        // add item touch helper
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(
+            new MemoItemTouchHelperCallback(memoAdapter)
+        );
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         // handle adding memos
         Button addMemoButton = findViewById(R.id.memo_ok_button);

@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.example.mastermemoapp.Entities.Memo;
 import com.example.mastermemoapp.R;
 
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -36,6 +37,23 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
     @Override
     public int getItemCount() {
         return listMemo.size();
+    }
+
+    // Called on each position change, during an item move.
+    public boolean onItemMove(int startPosition, int endPosition)
+    {
+        Collections.swap(listMemo, startPosition, endPosition);
+        notifyItemMoved(startPosition, endPosition);
+        return true;
+    }
+    // Called one time on item deletion
+    public void onItemDismiss(int position)
+    {
+        if (position > -1)
+        {
+            listMemo.remove(position);
+            notifyItemRemoved(position);
+        }
     }
 
     class MemoViewHolder extends RecyclerView.ViewHolder {
