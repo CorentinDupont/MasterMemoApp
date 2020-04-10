@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.mastermemoapp.Adapters.MemoAdapter;
+import com.example.mastermemoapp.Database.AppDatabaseHelper;
 import com.example.mastermemoapp.Entities.Memo;
 import com.example.mastermemoapp.ItemTouchHelpers.MemoItemTouchHelperCallback;
 
@@ -33,6 +34,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Create Database
+        // TODO: Move this to the splash screen
+        AppDatabaseHelper.getDatabase(this).memosDAO().getMemoList();
+
         // get recycler view
         recyclerView = findViewById(R.id.memo_rv);
         recyclerView.setHasFixedSize(true);
@@ -44,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setLayoutManager(layoutManager);
 
         // create fake memo list
-        listMemo = buildFakeMemoList(10);
+        // listMemo = buildFakeMemoList(10);
 
         // create and set recycler view adapter
         memoAdapter = new MemoAdapter(listMemo);
