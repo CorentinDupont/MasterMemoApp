@@ -10,8 +10,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.amitshekhar.utils.DatabaseHelper;
 import com.example.mastermemoapp.Adapters.MemoAdapter;
 import com.example.mastermemoapp.Database.AppDatabaseHelper;
+import com.example.mastermemoapp.Database.Schemas.MemoDTO;
 import com.example.mastermemoapp.Entities.Memo;
 import com.example.mastermemoapp.ItemTouchHelpers.MemoItemTouchHelperCallback;
 
@@ -21,7 +23,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     // memo list
-    List<Memo> listMemo = new ArrayList<>();
+    List<MemoDTO> listMemo = new ArrayList<>();
 
     // memo list adapter
     MemoAdapter memoAdapter;
@@ -34,10 +36,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Create Database
-        // TODO: Move this to the splash screen
-        AppDatabaseHelper.getDatabase(this).memosDAO().getMemoList();
-
         // get recycler view
         recyclerView = findViewById(R.id.memo_rv);
         recyclerView.setHasFixedSize(true);
@@ -48,8 +46,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        // create fake memo list
-        // listMemo = buildFakeMemoList(10);
+        // get memos from database
+        listMemo = AppDatabaseHelper.getDatabase(this).memosDAO().getMemoList();
 
         // create and set recycler view adapter
         memoAdapter = new MemoAdapter(listMemo);
@@ -85,8 +83,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // handle OK button click to insert a new memo in the recycler view
         if (v.getId() == R.id.memo_ok_button) {
+
+            // create memo and insert it in the database
             EditText memoET = findViewById(R.id.memo_text_et);
-            listMemo.add(new Memo(memoET.getText().toString()));
+            MemoDTO memo = new MemoDTO(memoET.getText().toString());
+            AppDatabaseHelper.getDatabase(this).memosDAO().insert(memo);
+
+            // refresh list
+            listMemo = AppDatabaseHelper.getDatabase(this).memosDAO().getMemoList();
             memoAdapter.notifyItemInserted(listMemo.size() - 1);
             recyclerView.smoothScrollToPosition(listMemo.size() - 1);
         }

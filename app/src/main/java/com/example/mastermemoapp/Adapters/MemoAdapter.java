@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mastermemoapp.Database.Schemas.MemoDTO;
 import com.example.mastermemoapp.Entities.Memo;
 import com.example.mastermemoapp.R;
 
@@ -16,9 +17,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder> {
 
-    private List<Memo> listMemo = null;
+    private List<MemoDTO> listMemo = null;
 
-    public MemoAdapter(List<Memo> listMemo) {
+    public MemoAdapter(List<MemoDTO> listMemo) {
         this.listMemo = listMemo;
     }
 
@@ -69,7 +70,7 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Memo memo = listMemo.get(getAdapterPosition());
+                    MemoDTO memo = listMemo.get(getAdapterPosition());
                     Toast.makeText(v.getContext(), memo.getText() + getAdapterPosition(), Toast.LENGTH_SHORT).show();
                 }
             });
