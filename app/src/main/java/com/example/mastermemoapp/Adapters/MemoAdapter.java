@@ -1,5 +1,7 @@
 package com.example.mastermemoapp.Adapters;
 
+import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,14 +9,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mastermemoapp.Database.Schemas.MemoDTO;
-import com.example.mastermemoapp.Entities.Memo;
 import com.example.mastermemoapp.R;
+import com.example.mastermemoapp.Webservices.HttpbinPostResponse;
+import com.google.gson.Gson;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import cz.msebera.android.httpclient.Header;
+
 public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder> {
 
     private List<MemoDTO> listMemo = null;
@@ -59,6 +67,7 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
 
     class MemoViewHolder extends RecyclerView.ViewHolder {
 
+        private static final String TAG = "MemoViewHolder";
         private TextView memoTextTV = null;
 
         private MemoViewHolder(@NonNull View itemView) {
@@ -66,18 +75,59 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
 
             this.memoTextTV = itemView.findViewById(R.id.memo_text_tv);
 
-            // add on click listener to show position and content of the memo.
+            // add on click listener to show content of the memo.
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     MemoDTO memo = listMemo.get(getAdapterPosition());
-                    Toast.makeText(v.getContext(), memo.getText() + getAdapterPosition(), Toast.LENGTH_SHORT).show();
+                    callWebservice(v.getContext(), memo);
+                    Log.i(TAG, "Clicked");
                 }
             });
         }
 
         private TextView getMemoTextTV() {
             return memoTextTV;
+        }
+
+        /**
+         * Call a webservice which return the sent memo.
+         * A Toast display data.
+         * @param memo memo to send to the webservice
+         */
+        private void callWebservice(final Context context, MemoDTO memo) {
+            // create http client
+            AsyncHttpClient client = new AsyncHttpClient();
+
+            // set parameters
+            RequestParams requestParams = new RequestParams();
+            requestParams.put("memo", memo.getText());
+
+            // call webservice
+            client.post("http://httpbin.org/post", requestParams, new AsyncHttpResponseHandler()
+            {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, byte[] response)
+                {
+                    // Webservice response
+                    String responseString = new String(response);
+
+                    // Convert JSON to Object
+                    Gson gson = new Gson();
+                    HttpbinPostResponse responseObject = gson.fromJson(responseString, HttpbinPostResponse.class);
+
+                    // Display memo content in a toast
+                    Log.i(TAG, responseObject.getForm().getMemo());
+                    Toast.makeText(context, responseObject.getForm().getMemo(), Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers,
+                                      byte[] errorResponse, Throwable e)
+                {
+                    Log.e(TAG, e.toString());
+                }
+            });
         }
 
     }
