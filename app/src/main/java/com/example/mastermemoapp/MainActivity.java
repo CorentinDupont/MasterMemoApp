@@ -5,10 +5,13 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.amitshekhar.utils.DatabaseHelper;
 import com.example.mastermemoapp.Adapters.MemoAdapter;
@@ -35,6 +38,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // display last clicked position from shared preferences
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int lastClickedPosition = preferences.getInt(String.valueOf(R.string.shared_pref_key_item_pos), 0);
+        Toast.makeText(this, "Last clicked position : " + lastClickedPosition, Toast.LENGTH_SHORT).show();
 
         // get recycler view
         recyclerView = findViewById(R.id.memo_rv);

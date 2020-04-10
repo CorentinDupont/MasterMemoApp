@@ -1,6 +1,8 @@
 package com.example.mastermemoapp.Adapters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,9 +81,10 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Log.i(TAG, "Clicked Memo");
                     MemoDTO memo = listMemo.get(getAdapterPosition());
                     callWebservice(v.getContext(), memo);
-                    Log.i(TAG, "Clicked");
+                    saveClickedItemInSharedPref(v.getContext(), getAdapterPosition());
                 }
             });
         }
@@ -130,6 +133,18 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
             });
         }
 
+        /**
+         * Save a position into Shared Preferences.
+         * @param context context of the app
+         * @param position memo position to store
+         */
+        private void saveClickedItemInSharedPref(Context context, int position) {
+            SharedPreferences preferences =
+                    PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putInt(String.valueOf(R.string.shared_pref_key_item_pos), getAdapterPosition());
+            editor.apply();
+        }
     }
 }
 
