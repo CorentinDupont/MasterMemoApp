@@ -98,7 +98,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             AppDatabaseHelper.getDatabase(this).memosDAO().insert(memo);
 
             // refresh list
-            listMemo = AppDatabaseHelper.getDatabase(this).memosDAO().getMemoList();
+            listMemo.clear();
+            List<MemoDTO> newMemoList = AppDatabaseHelper.getDatabase(this).memosDAO().getMemoList();
+            listMemo.addAll(newMemoList);
             memoAdapter.notifyItemInserted(listMemo.size() - 1);
             recyclerView.smoothScrollToPosition(listMemo.size() - 1);
         }
