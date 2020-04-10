@@ -3,11 +3,16 @@ package com.example.mastermemoapp.Adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,16 +36,18 @@ import cz.msebera.android.httpclient.Header;
 public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder> {
 
     private List<MemoDTO> listMemo = null;
+    private OnMemoListener onMemoListener;
 
-    public MemoAdapter(List<MemoDTO> listMemo) {
+    public MemoAdapter(List<MemoDTO> listMemo, OnMemoListener onMemoListener) {
         this.listMemo = listMemo;
+        this.onMemoListener = onMemoListener;
     }
 
     @NonNull
     @Override
     public MemoViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View viewMemo = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_memo, viewGroup, false);
-        return new MemoViewHolder(viewMemo);
+        return new MemoViewHolder(viewMemo, onMemoListener);
     }
 
     @Override
@@ -70,27 +77,29 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
         }
     }
 
-    class MemoViewHolder extends RecyclerView.ViewHolder {
+    class MemoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private static final String TAG = "MemoViewHolder";
         private TextView memoTextTV = null;
+        private OnMemoListener onMemoListener;
 
-        private MemoViewHolder(@NonNull View itemView) {
+        private MemoViewHolder(@NonNull View itemView, OnMemoListener onMemoListener) {
             super(itemView);
-
             this.memoTextTV = itemView.findViewById(R.id.memo_text_tv);
-
+            this.onMemoListener = onMemoListener;
             // add on click listener to show content of the memo.
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.i(TAG, "Clicked Memo");
-                    MemoDTO memo = listMemo.get(getAdapterPosition());
-                    callWebservice(v.getContext(), memo);
-                    saveClickedItemInSharedPref(v.getContext(), getAdapterPosition());
-                    showMemoDetails(v.getContext(), memo);
-                }
-            });
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Log.i(TAG, "Clicked Memo");
+            MemoDTO memo = listMemo.get(getAdapterPosition());
+            callWebservice(v.getContext(), memo);
+            saveClickedItemInSharedPref(v.getContext(), getAdapterPosition());
+
+            // Activity on click listener
+            onMemoListener.onMemoClick(getAdapterPosition(), memo);
         }
 
         private TextView getMemoTextTV() {
@@ -149,12 +158,10 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
             editor.putInt(String.valueOf(R.string.shared_pref_key_item_pos), getAdapterPosition());
             editor.apply();
         }
+    }
 
-        private void showMemoDetails(Context context, MemoDTO memo) {
-            Intent intent = new Intent(context, MemoDetailActivity.class);
-            intent.putExtra(MemoDetailFragment.MEMO_TEXT_PARAM, memo.getText());
-            itemView.getContext().startActivity(intent);
-        }
+    public interface OnMemoListener {
+        void onMemoClick(int position, MemoDTO memo);
     }
 }
 

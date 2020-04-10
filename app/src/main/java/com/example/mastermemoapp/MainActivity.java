@@ -5,7 +5,10 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -23,7 +26,7 @@ import com.example.mastermemoapp.ItemTouchHelpers.MemoItemTouchHelperCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, MemoAdapter.OnMemoListener {
 
     // memo list
     List<MemoDTO> listMemo = new ArrayList<>();
@@ -58,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listMemo = AppDatabaseHelper.getDatabase(this).memosDAO().getMemoList();
 
         // create and set recycler view adapter
-        memoAdapter = new MemoAdapter(listMemo);
+        memoAdapter = new MemoAdapter(listMemo, this);
         recyclerView.setAdapter(memoAdapter);
 
         // add item touch helper
@@ -70,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // handle adding memos
         Button addMemoButton = findViewById(R.id.memo_ok_button);
         addMemoButton.setOnClickListener(this);
-
     }
 
     /**
@@ -105,4 +107,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             recyclerView.smoothScrollToPosition(listMemo.size() - 1);
         }
     }
+
+    @Override
+    public void onMemoClick(int position, MemoDTO memo) {
+        showMemoDetails(memo);
+    }
+
+    /**
+     * Open the memo details fragment, as a new activity if portrait, or make appearing
+     * fragment in current activity.
+     * @param memo memo to display the details from.
+     */
+    private void showMemoDetails(MemoDTO memo) {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // create fragment
+            MemoDetailFragment fragment = new MemoDetailFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString(MemoDetailFragment.MEMO_TEXT_PARAM, memo.getText());
+            fragment.setArguments(bundle);
+
+            // display fragment
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_memo_detail_frame_layout, fragment).commit();
+        } else {
+            Intent intent = new Intent(this, MemoDetailActivity.class);
+            intent.putExtra(MemoDetailFragment.MEMO_TEXT_PARAM, memo.getText());
+            startActivity(intent);
+        }
+    }
+
+
 }
