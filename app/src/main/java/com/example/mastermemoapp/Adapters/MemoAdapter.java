@@ -1,6 +1,7 @@
 package com.example.mastermemoapp.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mastermemoapp.Database.Schemas.MemoDTO;
+import com.example.mastermemoapp.MemoDetailActivity;
+import com.example.mastermemoapp.MemoDetailFragment;
 import com.example.mastermemoapp.R;
 import com.example.mastermemoapp.Webservices.HttpbinPostResponse;
 import com.google.gson.Gson;
@@ -85,6 +88,7 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
                     MemoDTO memo = listMemo.get(getAdapterPosition());
                     callWebservice(v.getContext(), memo);
                     saveClickedItemInSharedPref(v.getContext(), getAdapterPosition());
+                    showMemoDetails(v.getContext(), memo);
                 }
             });
         }
@@ -144,6 +148,12 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.MemoViewHolder
             SharedPreferences.Editor editor = preferences.edit();
             editor.putInt(String.valueOf(R.string.shared_pref_key_item_pos), getAdapterPosition());
             editor.apply();
+        }
+
+        private void showMemoDetails(Context context, MemoDTO memo) {
+            Intent intent = new Intent(context, MemoDetailActivity.class);
+            intent.putExtra(MemoDetailFragment.MEMO_TEXT_PARAM, memo.getText());
+            itemView.getContext().startActivity(intent);
         }
     }
 }
