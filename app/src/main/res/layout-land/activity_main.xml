@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="Saisir un mémo ..."
+                android:hint="@string/memo_edit_text_hint"
                 android:imeOptions="actionDone"
                 android:inputType="textPersonName" />
 
